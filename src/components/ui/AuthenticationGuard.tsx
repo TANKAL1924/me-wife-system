@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
 
 const PUBLIC_PATHS = ['/homepage', '/login'];
 
 interface AuthenticationGuardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   isAuthenticated?: boolean;
   isLoading?: boolean;
   onSessionExpired?: () => void;
 }
 
-const AuthenticationGuard = ({ children, isAuthenticated = false, isLoading = false, onSessionExpired }: AuthenticationGuardProps) => {
+const AuthenticationGuard = ({ children, isAuthenticated = false, isLoading = false, onSessionExpired: _onSessionExpired }: AuthenticationGuardProps) => {
   const location = useLocation();
   const [showExpiredMessage, setShowExpiredMessage] = useState(false);
 

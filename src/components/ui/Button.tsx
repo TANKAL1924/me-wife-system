@@ -1,4 +1,4 @@
-import React from 'react';
+import { forwardRef, Children, isValidElement, cloneElement, type ButtonHTMLAttributes, type ReactElement, type PropsWithChildren, type ReactNode } from 'react';
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../utils/cn";
@@ -36,7 +36,7 @@ const buttonVariants = cva(
 );
 
 interface ButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    extends ButtonHTMLAttributes<HTMLButtonElement>,
         VariantProps<typeof buttonVariants> {
     asChild?: boolean;
     loading?: boolean;
@@ -46,7 +46,7 @@ interface ButtonProps
     fullWidth?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ 
     className,
     variant,
     size,
@@ -120,28 +120,28 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
     // When asChild is true, merge icons into the child element
     if (asChild) {
         try {
-            if (!children || React.Children?.count(children) !== 1) {
+            if (!children || Children?.count(children) !== 1) {
                 return renderFallbackButton();
             }
 
-            const child = React.Children?.only(children);
+            const child = Children?.only(children);
 
-            if (!React.isValidElement(child)) {
+            if (!isValidElement(child)) {
                 return renderFallbackButton();
             }
             const content = (
                 <>
                     {loading && <LoadingSpinner />}
                     {iconName && iconPosition === 'left' && renderIcon()}
-                    {(child.props as React.PropsWithChildren<{}>)?.children}
+                    {(child.props as PropsWithChildren<{}>)?.children}
                     {iconName && iconPosition === 'right' && renderIcon()}
                 </>
             );
 
-            const clonedChild = React.cloneElement(child as React.ReactElement<{
+            const clonedChild = cloneElement(child as ReactElement<{
                 className?: string;
                 disabled?: boolean;
-                children?: React.ReactNode;
+                children?: ReactNode;
             }>, {
                 className: cn(
                     buttonVariants({ variant, size, className }),
