@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
+import { useAuthStore } from '../../../store/authStore';
 
 interface FormData {
   email: string;
@@ -14,19 +15,13 @@ interface FormErrors {
   password?: string;
 }
 
-const MOCK_CREDENTIALS = {
-  email: 'couple@together.com',
-  password: 'Together@2026'
-};
-
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { signIn, loading, error: authError, clearError } = useAuthStore();
   const [formData, setFormData] = useState<FormData>({ email: '', password: '' });
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [loading, setLoading] = useState(false);
-  const [authError, setAuthError] = useState('');
 
   const validate = (): FormErrors => {
     const newErrors: FormErrors = {};
@@ -47,7 +42,7 @@ const LoginForm = () => {
     const { name, value } = e?.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors?.[name as keyof FormErrors]) setErrors(prev => ({ ...prev, [name]: '' }));
-    if (authError) setAuthError('');
+    if (authError) clearError();
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,16 +52,10 @@ const LoginForm = () => {
       setErrors(validationErrors);
       return;
     }
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 1200));
-    if (formData?.email === MOCK_CREDENTIALS?.email && formData?.password === MOCK_CREDENTIALS?.password) {
+    const success = await signIn(formData.email, formData.password);
+    if (success) {
       navigate('/dashboard');
-    } else {
-      setAuthError(
-        `Invalid credentials. Use email: ${MOCK_CREDENTIALS?.email} and password: ${MOCK_CREDENTIALS?.password}`
-      );
     }
-    setLoading(false);
   };
 
   return (

@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import Icon from '../../components/AppIcon';
 import LoginForm from './components/LoginForm';
 import SecurityBadges from './components/SecurityBadges';
@@ -18,45 +17,9 @@ const LoginPage = () => {
       </div>
       {/* Right Auth Panel */}
       <div className="flex-1 flex flex-col min-h-screen">
-        {/* Mobile top bar */}
-        <div
-          className="lg:hidden flex items-center justify-between px-4 md:px-6 py-4 border-b"
-          style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-card)' }}
-        >
-          <Link to="/homepage" className="flex items-center gap-2 focus-ring rounded-md">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: 'var(--color-primary)' }}
-            >
-              <Icon name="Heart" size={16} color="white" strokeWidth={2.5} />
-            </div>
-            <span className="font-heading text-lg font-semibold" style={{ color: 'var(--color-foreground)' }}>
-              Together
-            </span>
-          </Link>
-          <Link
-            to="/homepage"
-            className="flex items-center gap-1.5 text-sm font-caption transition-base focus-ring rounded-md px-2 py-1 hover-lift"
-            style={{ color: 'var(--color-muted-foreground)' }}
-          >
-            <Icon name="ArrowLeft" size={15} />
-            <span>Back</span>
-          </Link>
-        </div>
-
         {/* Main content */}
         <div className="flex-1 flex items-center justify-center px-4 md:px-8 py-10 md:py-14">
           <div className="w-full max-w-md">
-
-            {/* Desktop back link */}
-            <Link
-              to="/homepage"
-              className="hidden lg:inline-flex items-center gap-1.5 text-sm font-caption mb-8 transition-base focus-ring rounded-md hover-lift"
-              style={{ color: 'var(--color-muted-foreground)' }}
-            >
-              <Icon name="ArrowLeft" size={15} />
-              <span>Back to homepage</span>
-            </Link>
 
             {/* Header */}
             <div className="mb-8">
