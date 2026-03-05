@@ -1,20 +1,4 @@
-import { type CalendarEvent, type EventCategory } from './UpcomingEvents';
-
-const EVENT_COLORS: Record<EventCategory, string> = {
-  date: 'bg-pink-100 text-pink-700 border-pink-200',
-  appointment: 'bg-blue-100 text-blue-700 border-blue-200',
-  travel: 'bg-amber-100 text-amber-700 border-amber-200',
-  anniversary: 'bg-purple-100 text-purple-700 border-purple-200',
-  other: 'bg-green-100 text-green-700 border-green-200',
-};
-
-const EVENT_DOT_COLORS: Record<EventCategory, string> = {
-  date: 'bg-pink-500',
-  appointment: 'bg-blue-500',
-  travel: 'bg-amber-500',
-  anniversary: 'bg-purple-500',
-  other: 'bg-green-500',
-};
+import { type CalendarEvent } from './UpcomingEvents';
 
 const DAYS_OF_WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -134,17 +118,11 @@ const CalendarGrid = ({ currentDate, events, selectedDate, onDateSelect, onEvent
                       e?.stopPropagation();
                       onEventClick(ev);
                     }}
-                    className={`w-full text-left text-xs px-1 py-0.5 rounded border truncate font-caption transition-base hover:opacity-80 ${
-                      EVENT_COLORS?.[ev?.category] || EVENT_COLORS?.other
-                    }`}
+                    className={`w-full text-left text-xs px-1 py-0.5 rounded border truncate font-caption transition-base hover:opacity-80 bg-orange-50 text-orange-700 border-orange-200`}
                   >
                     <span className="hidden md:inline">{ev?.title}</span>
                     <span className="md:hidden">
-                      <span
-                        className={`inline-block w-2 h-2 rounded-full ${
-                          EVENT_DOT_COLORS?.[ev?.category] || EVENT_DOT_COLORS?.other
-                        }`}
-                      />
+                      <span className="inline-block w-2 h-2 rounded-full bg-orange-500" />
                     </span>
                   </button>
                 ))}
@@ -165,5 +143,4 @@ const CalendarGrid = ({ currentDate, events, selectedDate, onDateSelect, onEvent
   );
 };
 
-export { EVENT_COLORS, EVENT_DOT_COLORS };
 export default CalendarGrid;

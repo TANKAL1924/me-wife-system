@@ -3,12 +3,11 @@ import Button from '../../../components/ui/Button';
 
 interface EmptyStateProps {
   searchQuery: string;
-  activeAlbum: string;
   onUploadClick: () => void;
 }
 
-const EmptyState = ({ searchQuery, activeAlbum, onUploadClick }: EmptyStateProps) => {
-  const isFiltered = searchQuery || activeAlbum !== 'All';
+const EmptyState = ({ searchQuery, onUploadClick }: EmptyStateProps) => {
+  const isFiltered = !!searchQuery;
 
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-5 text-center">

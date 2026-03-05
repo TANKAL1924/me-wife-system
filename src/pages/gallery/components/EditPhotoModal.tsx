@@ -5,13 +5,10 @@ import Input from '../../../components/ui/Input';
 
 interface Photo {
   id: number;
-  src: string;
-  alt: string;
+  photo_name: string;
   title: string;
-  date: string;
-  album?: string;
-  tags: string[];
-  description: string;
+  fav: boolean;
+  created_at: string;
 }
 
 interface EditPhotoModalProps {
@@ -20,25 +17,12 @@ interface EditPhotoModalProps {
   onSave: (photo: Photo) => void;
 }
 
-const ALBUMS = ['Trips', 'Anniversaries', 'Daily Life', 'Milestones', 'Holidays'];
-
 const EditPhotoModal = ({ photo, onClose, onSave }: EditPhotoModalProps) => {
   const [title, setTitle] = useState<string>(photo?.title || '');
-  const [description, setDescription] = useState<string>(photo?.description || '');
-  const [album, setAlbum] = useState<string>(photo?.album || '');
-  const [tagInput, setTagInput] = useState<string>('');
-  const [tags, setTags] = useState<string[]>(photo?.tags || []);
-
-  const addTag = () => {
-    const t = tagInput?.trim();
-    if (t && !tags?.includes(t)) setTags([...tags, t]);
-    setTagInput('');
-  };
-
-  const removeTag = (tag: string) => setTags(tags?.filter((t) => t !== tag));
+  const [fav, setFav] = useState<boolean>(photo?.fav ?? false);
 
   const handleSave = () => {
-    onSave({ ...photo, title, description, album, tags });
+    onSave({ ...photo, title, fav });
     onClose();
   };
 
@@ -62,64 +46,19 @@ const EditPhotoModal = ({ photo, onClose, onSave }: EditPhotoModalProps) => {
 
         <Input label="Title" type="text" value={title} onChange={(e) => setTitle(e?.target?.value)} placeholder="Photo title" />
 
-        <div className="flex flex-col gap-1">
-          <label className="font-caption text-sm font-medium" style={{ color: 'var(--color-foreground)' }}>Description</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e?.target?.value)}
-            rows={3}
-            placeholder="Add a memory note..."
-            className="w-full px-3 py-2 rounded-md font-body text-sm resize-none focus-ring"
-            style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-foreground)', border: '1px solid var(--color-border)' }}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="font-caption text-sm font-medium" style={{ color: 'var(--color-foreground)' }}>Album</label>
-          <select
-            value={album}
-            onChange={(e) => setAlbum(e?.target?.value)}
-            className="w-full px-3 py-2 rounded-md font-caption text-sm focus-ring"
-            style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-foreground)', border: '1px solid var(--color-border)' }}
-          >
-            <option value="">No album</option>
-            {ALBUMS?.map((a) => <option key={a} value={a}>{a}</option>)}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="font-caption text-sm font-medium" style={{ color: 'var(--color-foreground)' }}>Tags</label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e?.target?.value)}
-              onKeyDown={(e) => e?.key === 'Enter' && addTag()}
-              placeholder="Add tag..."
-              className="flex-1 px-3 py-2 rounded-md font-caption text-sm focus-ring"
-              style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-foreground)', border: '1px solid var(--color-border)' }}
-            />
-            <button
-              onClick={addTag}
-              className="px-3 py-2 rounded-md font-caption text-sm transition-base focus-ring"
-              style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-            >
-              Add
-            </button>
-          </div>
-          {tags?.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {tags?.map((tag) => (
-                <span key={tag} className="flex items-center gap-1 px-2 py-0.5 rounded-full font-caption text-xs" style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-muted-foreground)' }}>
-                  {tag}
-                  <button onClick={() => removeTag(tag)} className="hover:text-red-500 transition-base" aria-label={`Remove tag ${tag}`}>
-                    <Icon name="X" size={10} />
-                  </button>
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Favourite toggle */}
+        <button
+          onClick={() => setFav((v) => !v)}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg transition-base focus-ring w-fit"
+          style={{
+            backgroundColor: fav ? 'rgba(212,118,26,0.10)' : 'var(--color-muted)',
+            color: fav ? 'var(--color-primary)' : 'var(--color-muted-foreground)',
+          }}
+          type="button"
+        >
+          <Icon name="Heart" size={16} color={fav ? 'var(--color-primary)' : 'currentColor'} strokeWidth={fav ? 2.5 : 2} />
+          <span className="font-caption text-sm">{fav ? 'Marked as favourite' : 'Mark as favourite'}</span>
+        </button>
 
         <div className="flex gap-3 justify-end pt-2">
           <Button variant="outline" onClick={onClose}>Cancel</Button>

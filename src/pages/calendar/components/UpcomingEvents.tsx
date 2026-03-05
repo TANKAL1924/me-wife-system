@@ -1,23 +1,4 @@
 import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-
-const CATEGORY_ICONS = {
-  date: 'Heart',
-  appointment: 'Stethoscope',
-  travel: 'Plane',
-  anniversary: 'Star',
-  other: 'Calendar',
-};
-
-const CATEGORY_COLORS = {
-  date: 'var(--color-accent)',
-  appointment: '#3B82F6',
-  travel: 'var(--color-warning)',
-  anniversary: '#8B5CF6',
-  other: 'var(--color-success)',
-};
-
-export type EventCategory = 'date' | 'appointment' | 'travel' | 'anniversary' | 'other';
 
 export interface CalendarEvent {
   id: string;
@@ -25,19 +6,19 @@ export interface CalendarEvent {
   startDate: string;
   endDate?: string;
   location?: string;
-  description?: string;
-  category: EventCategory;
-  allDay: boolean;
 }
 
-const formatDate = (dateStr: string) => {
+const formatDateTime = (dateStr: string) => {
   const d = new Date(dateStr);
-  return d?.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-};
-
-const formatTime = (dateStr: string) => {
-  const d = new Date(dateStr);
-  return d?.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return d.toLocaleString('en-MY', {
+    timeZone: 'Asia/Kuala_Lumpur',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
 };
 
 interface UpcomingEventsProps {
@@ -46,7 +27,7 @@ interface UpcomingEventsProps {
   onAddEvent: () => void;
 }
 
-const UpcomingEvents = ({ events, onEventClick, onAddEvent }: UpcomingEventsProps) => {
+const UpcomingEvents = ({ events, onEventClick }: UpcomingEventsProps) => {
   const now = new Date();
   const upcoming = events?.filter((e) => new Date(e.startDate) >= now)?.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())?.slice(0, 8);
 
@@ -67,9 +48,6 @@ const UpcomingEvents = ({ events, onEventClick, onAddEvent }: UpcomingEventsProp
         <h3 className="font-heading text-base font-semibold" style={{ color: 'var(--color-foreground)' }}>
           Upcoming Events
         </h3>
-        <Button variant="ghost" size="xs" iconName="Plus" iconPosition="left" onClick={onAddEvent}>
-          Add
-        </Button>
       </div>
       {/* List */}
       <div className="flex-1 overflow-y-auto divide-y divide-[var(--color-border)]">
@@ -88,16 +66,6 @@ const UpcomingEvents = ({ events, onEventClick, onAddEvent }: UpcomingEventsProp
               className="w-full text-left px-4 py-3 hover:bg-orange-50 transition-base group"
             >
               <div className="flex items-start gap-3">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                  style={{ backgroundColor: `${CATEGORY_COLORS?.[ev?.category]}18` }}
-                >
-                  <Icon
-                    name={CATEGORY_ICONS?.[ev?.category] || 'Calendar'}
-                    size={15}
-                    color={CATEGORY_COLORS?.[ev?.category] || 'var(--color-primary)'}
-                  />
-                </div>
                 <div className="flex-1 min-w-0">
                   <p
                     className="text-sm font-caption font-semibold truncate group-hover:text-primary-color transition-base"
@@ -106,8 +74,7 @@ const UpcomingEvents = ({ events, onEventClick, onAddEvent }: UpcomingEventsProp
                     {ev?.title}
                   </p>
                   <p className="text-xs font-caption mt-0.5" style={{ color: 'var(--color-muted-foreground)' }}>
-                    {formatDate(ev?.startDate)}
-                    {ev?.allDay ? ' · All day' : ` · ${formatTime(ev?.startDate)}`}
+                    {formatDateTime(ev?.startDate)}
                   </p>
                   {ev?.location && (
                     <p className="text-xs font-caption flex items-center gap-1 mt-0.5" style={{ color: 'var(--color-muted-foreground)' }}>
@@ -126,5 +93,4 @@ const UpcomingEvents = ({ events, onEventClick, onAddEvent }: UpcomingEventsProp
   );
 };
 
-export { CATEGORY_ICONS, CATEGORY_COLORS };
 export default UpcomingEvents;

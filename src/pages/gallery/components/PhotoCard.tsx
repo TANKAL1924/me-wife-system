@@ -2,28 +2,24 @@ import { useState } from 'react';
 import Image from '../../../components/AppImage';
 import Icon from '../../../components/AppIcon';
 import useScrollAnimation from '../../../hooks/useScrollAnimation';
+import { getGalleryPhotoUrl } from '../../../utils/supabase';
 
 interface Photo {
   id: number;
-  src: string;
-  alt: string;
+  photo_name: string;
   title: string;
-  date: string;
-  album?: string;
-  tags: string[];
-  description: string;
+  fav: boolean;
+  created_at: string;
 }
 
 interface PhotoCardProps {
   photo: Photo;
-  isSelected: boolean;
-  onSelect: (id: number) => void;
   onOpen: (photo: Photo) => void;
-  selectionMode: boolean;
+  onToggleFav: (id: number) => void;
   index?: number;
 }
 
-const PhotoCard = ({ photo, isSelected, onSelect, onOpen, selectionMode, index = 0 }: PhotoCardProps) => {
+const PhotoCard = ({ photo, onOpen, onToggleFav, index = 0 }: PhotoCardProps) => {
   const [hovered, setHovered] = useState(false);
   const { ref, isVisible } = useScrollAnimation<HTMLDivElement>();
 
@@ -35,17 +31,17 @@ const PhotoCard = ({ photo, isSelected, onSelect, onOpen, selectionMode, index =
       ref={ref}
       className={`relative overflow-hidden rounded-lg cursor-pointer group transition-base scroll-hidden ${delayClass} ${isVisible ? 'scroll-visible' : ''}`}
       style={{
-        boxShadow: isSelected ? '0 0 0 3px var(--color-primary)' : 'var(--shadow-sm)',
+        boxShadow: 'var(--shadow-sm)',
         borderRadius: 'var(--radius-md)',
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => selectionMode ? onSelect(photo?.id) : onOpen(photo)}
+      onClick={() => onOpen(photo)}
     >
       <div className="w-full aspect-square overflow-hidden">
         <Image
-          src={photo?.src}
-          alt={photo?.alt}
+          src={getGalleryPhotoUrl(photo.photo_name)}
+          alt={photo.title || photo.photo_name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
@@ -54,39 +50,32 @@ const PhotoCard = ({ photo, isSelected, onSelect, onOpen, selectionMode, index =
         className="absolute inset-0 flex flex-col justify-between p-3 transition-opacity duration-200"
         style={{
           background: 'linear-gradient(to bottom, rgba(44,24,16,0.0) 0%, rgba(44,24,16,0.65) 100%)',
-          opacity: hovered || isSelected ? 1 : 0,
+          opacity: hovered ? 1 : 0,
         }}
       >
-        {/* Top: checkbox */}
+        {/* Top: fav heart toggle */}
         <div className="flex justify-end">
           <button
-            onClick={(e) => { e?.stopPropagation(); onSelect(photo?.id); }}
+            onClick={(e) => { e.stopPropagation(); onToggleFav(photo.id); }}
             className="w-7 h-7 rounded-full flex items-center justify-center transition-base focus-ring"
-            style={{
-              backgroundColor: isSelected ? 'var(--color-primary)' : 'rgba(255,255,255,0.85)',
-              border: isSelected ? 'none' : '2px solid rgba(255,255,255,0.7)',
-            }}
-            aria-label={isSelected ? 'Deselect photo' : 'Select photo'}
+            style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}
+            aria-label={photo.fav ? 'Remove from favourites' : 'Add to favourites'}
           >
-            {isSelected && <Icon name="Check" size={14} color="white" strokeWidth={3} />}
+            <Icon
+              name="Heart"
+              size={14}
+              color={photo.fav ? 'var(--color-primary)' : 'white'}
+              strokeWidth={2.5}
+              fill={photo.fav ? 'var(--color-primary)' : 'none'}
+            />
           </button>
         </div>
 
-        {/* Bottom: info */}
+        {/* Bottom: title */}
         <div>
-          <p className="font-caption text-xs font-semibold text-white line-clamp-1">{photo?.title}</p>
-          <p className="font-caption text-xs text-white/70">{photo?.date}</p>
+          <p className="font-caption text-xs font-semibold text-white line-clamp-1">{photo.title}</p>
         </div>
       </div>
-      {/* Album tag */}
-      {photo?.album && (
-        <div
-          className="absolute top-2 left-2 px-2 py-0.5 rounded-full font-caption text-xs"
-          style={{ backgroundColor: 'rgba(212,118,26,0.85)', color: 'white' }}
-        >
-          {photo?.album}
-        </div>
-      )}
     </div>
   );
 };

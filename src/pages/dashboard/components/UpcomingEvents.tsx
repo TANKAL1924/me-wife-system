@@ -1,42 +1,37 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
+import { fetchEvents } from "../../calendar/service/calendarService";
+import type { CalendarEvent } from "../../calendar/components/UpcomingEvents";
 
-const events = [
-  {
-    id: 1,
-    title: "Anniversary Dinner",
-    date: "Mar 15, 2026",
-    time: "07:30 PM",
-    location: "La Maison Restaurant",
-    category: "Special",
-    categoryColor: "#FF6B35",
-    categoryBg: "rgba(255, 107, 53, 0.12)",
-  },
-  {
-    id: 2,
-    title: "Doctor\'s Appointment",
-    date: "Mar 20, 2026",
-    time: "10:00 AM",
-    location: "City Medical Center",
-    category: "Health",
-    categoryColor: "#2D5016",
-    categoryBg: "rgba(45, 80, 22, 0.12)",
-  },
-  {
-    id: 3,
-    title: "Weekend Getaway",
-    date: "Mar 28, 2026",
-    time: "09:00 AM",
-    location: "Blue Ridge Mountains",
-    category: "Travel",
-    categoryColor: "var(--color-primary)",
-    categoryBg: "rgba(212, 118, 26, 0.12)",
-  },
-];
+const formatDateTime = (dateStr: string) =>
+  new Date(dateStr).toLocaleString('en-MY', {
+    timeZone: 'Asia/Kuala_Lumpur',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
 
 const UpcomingEvents = () => {
   const navigate = useNavigate();
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents().then(({ data }) => {
+      const now = new Date();
+      const upcoming = data
+        .filter((e) => new Date(e.startDate) >= now)
+        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+        .slice(0, 10);
+      setEvents(upcoming);
+      setLoading(false);
+    });
+  }, []);
 
   return (
     <div className="card" style={{ padding: "24px" }}>
@@ -51,53 +46,59 @@ const UpcomingEvents = () => {
           View All
         </Button>
       </div>
-      <div className="flex flex-col gap-3">
-        {events?.map((event) => (
-          <div
-            key={event?.id}
-            className="flex items-start gap-3 p-3 rounded-xl transition-base hover-lift cursor-pointer"
-            style={{ backgroundColor: "var(--color-muted)" }}
-            onClick={() => navigate("/calendar")}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e?.key === "Enter" && navigate("/calendar")}
-          >
+
+      {loading ? (
+        <div className="flex flex-col gap-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-16 rounded-xl animate-pulse" style={{ backgroundColor: "var(--color-muted)" }} />
+          ))}
+        </div>
+      ) : events.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-8 gap-2">
+          <Icon name="CalendarOff" size={28} color="var(--color-muted-foreground)" />
+          <p className="font-caption text-sm" style={{ color: "var(--color-muted-foreground)" }}>No upcoming events</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {events.map((event) => (
             <div
-              className="w-10 h-10 rounded-lg flex flex-col items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: event?.categoryBg }}
+              key={event.id}
+              className="flex items-start gap-3 p-3 rounded-xl transition-base hover-lift cursor-pointer"
+              style={{ backgroundColor: "var(--color-muted)" }}
+              onClick={() => navigate("/calendar")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e?.key === "Enter" && navigate("/calendar")}
             >
-              <Icon name="Calendar" size={16} color={event?.categoryColor} strokeWidth={2} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <p className="font-caption text-sm font-semibold line-clamp-1" style={{ color: "var(--color-foreground)" }}>
-                  {event?.title}
-                </p>
-                <span
-                  className="font-caption text-xs px-2 py-0.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: event?.categoryBg, color: event?.categoryColor }}
-                >
-                  {event?.category}
-                </span>
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: "rgba(212, 118, 26, 0.12)" }}
+              >
+                <Icon name="Calendar" size={16} color="var(--color-primary)" strokeWidth={2} />
               </div>
-              <div className="flex items-center gap-3 mt-1">
-                <div className="flex items-center gap-1">
+              <div className="flex-1 min-w-0">
+                <p className="font-caption text-sm font-semibold line-clamp-1" style={{ color: "var(--color-foreground)" }}>
+                  {event.title}
+                </p>
+                <div className="flex items-center gap-1 mt-1">
                   <Icon name="Clock" size={11} color="var(--color-muted-foreground)" />
                   <span className="font-data text-xs" style={{ color: "var(--color-muted-foreground)" }}>
-                    {event?.date} · {event?.time}
+                    {formatDateTime(event.startDate)}
                   </span>
                 </div>
-              </div>
-              <div className="flex items-center gap-1 mt-0.5">
-                <Icon name="MapPin" size={11} color="var(--color-muted-foreground)" />
-                <span className="font-caption text-xs line-clamp-1" style={{ color: "var(--color-muted-foreground)" }}>
-                  {event?.location}
-                </span>
+                {event.location && (
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <Icon name="MapPin" size={11} color="var(--color-muted-foreground)" />
+                    <span className="font-caption text-xs line-clamp-1" style={{ color: "var(--color-muted-foreground)" }}>
+                      {event.location}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

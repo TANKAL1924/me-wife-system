@@ -66,7 +66,9 @@ export async function resetPassword(email: string): Promise<{ error: AuthError |
 export function onAuthStateChange(
   callback: (session: Session | null) => void
 ) {
-  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // INITIAL_SESSION fires immediately on subscribe — skip it, initAuth handles that
+    if (event === 'INITIAL_SESSION') return;
     callback(session);
   });
   return subscription;

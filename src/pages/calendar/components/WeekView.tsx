@@ -1,12 +1,4 @@
-import { type CalendarEvent, type EventCategory } from './UpcomingEvents';
-
-const EVENT_COLORS: Record<EventCategory, string> = {
-  date: 'bg-pink-100 text-pink-700 border-pink-200',
-  appointment: 'bg-blue-100 text-blue-700 border-blue-200',
-  travel: 'bg-amber-100 text-amber-700 border-amber-200',
-  anniversary: 'bg-purple-100 text-purple-700 border-purple-200',
-  other: 'bg-green-100 text-green-700 border-green-200',
-};
+import { type CalendarEvent } from './UpcomingEvents';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -89,9 +81,7 @@ const WeekView = ({ weekStart, events, selectedDate, onDateSelect, onEventClick 
                       e?.stopPropagation();
                       onEventClick(ev);
                     }}
-                    className={`w-full text-left text-xs px-1.5 py-1 rounded border truncate font-caption transition-base hover:opacity-80 ${
-                      EVENT_COLORS?.[ev?.category] || EVENT_COLORS?.other
-                    }`}
+                    className={`w-full text-left text-xs px-1.5 py-1 rounded border truncate font-caption transition-base hover:opacity-80 bg-orange-50 text-orange-700 border-orange-200`}
                   >
                     <span className="hidden sm:inline">{ev?.title}</span>
                     <span className="sm:hidden truncate">{ev?.title?.slice(0, 6)}</span>

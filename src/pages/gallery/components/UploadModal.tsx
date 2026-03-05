@@ -5,7 +5,7 @@ import Input from '../../../components/ui/Input';
 
 interface UploadModalProps {
   onClose: () => void;
-  onUpload: (data: { files: File[]; title: string; album: string }) => void;
+  onUpload: (data: { files: File[]; title: string }) => void;
 }
 
 const UploadModal = ({ onClose, onUpload }: UploadModalProps) => {
@@ -14,10 +14,7 @@ const UploadModal = ({ onClose, onUpload }: UploadModalProps) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [title, setTitle] = useState('');
-  const [album, setAlbum] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const ALBUMS = ['Trips', 'Anniversaries', 'Daily Life', 'Milestones', 'Holidays'];
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e?.preventDefault();
@@ -41,7 +38,7 @@ const UploadModal = ({ onClose, onUpload }: UploadModalProps) => {
       if (prog >= 100) {
         clearInterval(interval);
         setTimeout(() => {
-          onUpload({ files, title, album });
+          onUpload({ files, title });
           onClose();
         }, 400);
       }
@@ -90,20 +87,7 @@ const UploadModal = ({ onClose, onUpload }: UploadModalProps) => {
           <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden" onChange={handleFileChange} />
         </div>
 
-        <Input label="Photo Title (optional)" type="text" placeholder="e.g. Beach Sunset" value={title} onChange={(e) => setTitle(e?.target?.value)} />
-
-        <div className="flex flex-col gap-1">
-          <label className="font-caption text-sm font-medium" style={{ color: 'var(--color-foreground)' }}>Add to Album</label>
-          <select
-            value={album}
-            onChange={(e) => setAlbum(e?.target?.value)}
-            className="w-full px-3 py-2 rounded-md font-caption text-sm focus-ring"
-            style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-foreground)', border: '1px solid var(--color-border)' }}
-          >
-            <option value="">No album</option>
-            {ALBUMS?.map((a) => <option key={a} value={a}>{a}</option>)}
-          </select>
-        </div>
+        <Input label="Title" type="text" placeholder="e.g. Baby" value={title} onChange={(e) => setTitle(e?.target?.value)} />
 
         {uploading && (
           <div className="flex flex-col gap-2">

@@ -8,3 +8,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export const getGalleryPhotoUrl = (photo_name: string): string =>
+  supabase.storage.from('gallery').getPublicUrl(photo_name).data.publicUrl;

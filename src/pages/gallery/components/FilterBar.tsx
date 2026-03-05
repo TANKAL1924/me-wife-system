@@ -4,51 +4,21 @@ type ViewMode = 'grid' | 'masonry';
 type SortOption = 'newest' | 'oldest' | 'title';
 
 interface FilterBarProps {
-  activeAlbum: string;
-  onAlbumChange: (album: string) => void;
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
-  onCreateAlbum: () => void;
 }
 
-
-const ALBUMS = ['All', 'Trips', 'Anniversaries', 'Daily Life', 'Milestones', 'Holidays'];
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest First' },
   { value: 'oldest', label: 'Oldest First' },
   { value: 'title', label: 'By Title' },
 ];
 
-const FilterBar = ({ activeAlbum, onAlbumChange, sortBy, onSortChange, viewMode, onViewModeChange, onCreateAlbum }: FilterBarProps) => {
+const FilterBar = ({ sortBy, onSortChange, viewMode, onViewModeChange }: FilterBarProps) => {
   return (
     <div className="flex flex-col gap-3 mb-6">
-      {/* Albums */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-        {ALBUMS?.map((album) => (
-          <button
-            key={album}
-            onClick={() => onAlbumChange(album)}
-            className="flex-shrink-0 px-4 py-2 rounded-full font-caption text-sm font-medium transition-base focus-ring whitespace-nowrap"
-            style={{
-              backgroundColor: activeAlbum === album ? 'var(--color-primary)' : 'var(--color-muted)',
-              color: activeAlbum === album ? 'var(--color-primary-foreground)' : 'var(--color-muted-foreground)',
-              minHeight: '36px',
-            }}
-          >
-            {album}
-          </button>
-        ))}
-        <button
-          onClick={onCreateAlbum}
-          className="flex-shrink-0 flex items-center gap-1 px-3 py-2 rounded-full font-caption text-sm font-medium transition-base focus-ring whitespace-nowrap"
-          style={{ border: '1.5px dashed var(--color-border)', color: 'var(--color-muted-foreground)', minHeight: '36px' }}
-        >
-          <Icon name="Plus" size={14} />
-          New Album
-        </button>
-      </div>
       {/* Sort & View */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">

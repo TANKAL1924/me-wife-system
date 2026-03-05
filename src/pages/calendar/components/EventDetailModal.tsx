@@ -1,20 +1,19 @@
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
-import { CATEGORY_ICONS, CATEGORY_COLORS, type CalendarEvent } from './UpcomingEvents';
+import { type CalendarEvent } from './UpcomingEvents';
 
-const CATEGORY_LABELS = {
-  date: 'Date Night',
-  appointment: 'Appointment',
-  travel: 'Travel',
-  anniversary: 'Anniversary',
-  other: 'Other',
-};
-
-const formatDateTime = (dateStr: string, allDay: boolean) => {
+const formatDateTime = (dateStr: string) => {
   const d = new Date(dateStr);
-  if (allDay) return d?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  return d?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) +
-    ' at ' + d?.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  return d.toLocaleString('en-MY', {
+    timeZone: 'Asia/Kuala_Lumpur',
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
 };
 
 interface EventDetailModalProps {
@@ -28,9 +27,6 @@ interface EventDetailModalProps {
 const EventDetailModal = ({ isOpen, event, onClose, onEdit, onDelete }: EventDetailModalProps) => {
   if (!isOpen || !event) return null;
 
-  const color = CATEGORY_COLORS?.[event?.category] || 'var(--color-primary)';
-  const iconName = CATEGORY_ICONS?.[event?.category] || 'Calendar';
-
   return (
     <div
       className="fixed inset-0 flex items-center justify-center p-4"
@@ -42,27 +38,21 @@ const EventDetailModal = ({ isOpen, event, onClose, onEdit, onDelete }: EventDet
         style={{ backgroundColor: 'var(--color-card)' }}
       >
         {/* Color bar */}
-        <div className="h-1.5 w-full" style={{ backgroundColor: color }} />
+        <div className="h-1.5 w-full" style={{ backgroundColor: 'var(--color-primary)' }} />
 
         {/* Header */}
         <div className="px-5 pt-4 pb-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: `${color}18` }}
+              style={{ backgroundColor: 'rgba(212,118,26,0.08)' }}
             >
-              <Icon name={iconName} size={20} color={color} />
+              <Icon name="Calendar" size={20} color="var(--color-primary)" />
             </div>
             <div>
               <h2 className="font-heading text-lg font-semibold leading-tight" style={{ color: 'var(--color-foreground)' }}>
                 {event?.title}
               </h2>
-              <span
-                className="text-xs font-caption px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: `${color}18`, color }}
-              >
-                {CATEGORY_LABELS?.[event?.category] || 'Event'}
-              </span>
             </div>
           </div>
           <button
@@ -80,11 +70,11 @@ const EventDetailModal = ({ isOpen, event, onClose, onEdit, onDelete }: EventDet
             <Icon name="Clock" size={16} color="var(--color-muted-foreground)" className="mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm font-caption" style={{ color: 'var(--color-foreground)' }}>
-                {formatDateTime(event?.startDate, event?.allDay)}
+                {formatDateTime(event?.startDate)}
               </p>
-              {event?.endDate && !event?.allDay && (
+              {event?.endDate && (
                 <p className="text-xs font-caption mt-0.5" style={{ color: 'var(--color-muted-foreground)' }}>
-                  Until {new Date(event.endDate)?.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                  Until {formatDateTime(event.endDate)}
                 </p>
               )}
             </div>
@@ -94,15 +84,6 @@ const EventDetailModal = ({ isOpen, event, onClose, onEdit, onDelete }: EventDet
             <div className="flex items-start gap-3">
               <Icon name="MapPin" size={16} color="var(--color-muted-foreground)" className="mt-0.5 flex-shrink-0" />
               <p className="text-sm font-caption" style={{ color: 'var(--color-foreground)' }}>{event?.location}</p>
-            </div>
-          )}
-
-          {event?.description && (
-            <div className="flex items-start gap-3">
-              <Icon name="FileText" size={16} color="var(--color-muted-foreground)" className="mt-0.5 flex-shrink-0" />
-              <p className="text-sm font-caption leading-relaxed" style={{ color: 'var(--color-foreground)' }}>
-                {event?.description}
-              </p>
             </div>
           )}
         </div>

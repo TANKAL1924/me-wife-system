@@ -2,16 +2,14 @@ import { useEffect, useCallback } from 'react';
 import Image from '../../../components/AppImage';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import { getGalleryPhotoUrl } from '../../../utils/supabase';
 
 interface Photo {
   id: number;
-  src: string;
-  alt: string;
+  photo_name: string;
   title: string;
-  date: string;
-  album?: string;
-  tags: string[];
-  description: string;
+  fav: boolean;
+  created_at: string;
 }
 
 interface LightboxProps {
@@ -21,9 +19,10 @@ interface LightboxProps {
   onPrev: () => void;
   onNext: () => void;
   onEdit: (photo: Photo) => void;
+  onDelete: (photo: Photo) => void;
 }
 
-const Lightbox = ({ photo, photos, onClose, onPrev, onNext, onEdit }: LightboxProps) => {
+const Lightbox = ({ photo, photos, onClose, onPrev, onNext, onEdit, onDelete }: LightboxProps) => {
   const currentIndex = photos?.findIndex((p) => p?.id === photo?.id);
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -56,8 +55,8 @@ const Lightbox = ({ photo, photos, onClose, onPrev, onNext, onEdit }: LightboxPr
         {/* Image area */}
         <div className="relative flex-1 flex items-center justify-center bg-black min-h-[280px] lg:min-h-[500px]">
           <Image
-            src={photo?.src}
-            alt={photo?.alt}
+            src={getGalleryPhotoUrl(photo.photo_name)}
+            alt={photo.title || photo.photo_name}
             className="max-w-full max-h-[60vh] lg:max-h-[80vh] object-contain"
           />
 
@@ -95,7 +94,7 @@ const Lightbox = ({ photo, photos, onClose, onPrev, onNext, onEdit }: LightboxPr
         {/* Info panel */}
         <div className="w-full lg:w-72 flex flex-col p-5 gap-4" style={{ borderLeft: '1px solid var(--color-border)' }}>
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-heading text-lg" style={{ color: 'var(--color-foreground)' }}>{photo?.title}</h3>
+            <h3 className="font-heading text-lg" style={{ color: 'var(--color-foreground)' }}>{photo.title}</h3>
             <button
               onClick={onClose}
               className="w-8 h-8 flex items-center justify-center rounded-md transition-base focus-ring flex-shrink-0"
@@ -106,41 +105,15 @@ const Lightbox = ({ photo, photos, onClose, onPrev, onNext, onEdit }: LightboxPr
             </button>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <Icon name="Calendar" size={14} color="var(--color-muted-foreground)" />
-              <span className="font-caption text-sm" style={{ color: 'var(--color-muted-foreground)' }}>{photo?.date}</span>
-            </div>
-            {photo?.album && (
-              <div className="flex items-center gap-2">
-                <Icon name="FolderHeart" size={14} color="var(--color-muted-foreground)" />
-                <span className="font-caption text-sm" style={{ color: 'var(--color-muted-foreground)' }}>{photo?.album}</span>
-              </div>
-            )}
-            {photo?.tags && photo?.tags?.length > 0 && (
-              <div className="flex items-start gap-2">
-                <Icon name="Tag" size={14} color="var(--color-muted-foreground)" className="mt-0.5 flex-shrink-0" />
-                <div className="flex flex-wrap gap-1">
-                  {photo?.tags?.map((tag) => (
-                    <span key={tag} className="px-2 py-0.5 rounded-full font-caption text-xs" style={{ backgroundColor: 'var(--color-muted)', color: 'var(--color-muted-foreground)' }}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {photo?.description && (
-            <p className="font-body text-sm" style={{ color: 'var(--color-foreground)', maxWidth: '100%' }}>{photo?.description}</p>
-          )}
-
           <div className="mt-auto flex flex-col gap-2">
             <Button variant="outline" size="sm" iconName="Pencil" iconPosition="left" onClick={() => onEdit(photo)}>
               Edit Details
             </Button>
             <Button variant="ghost" size="sm" iconName="Download" iconPosition="left">
               Download
+            </Button>
+            <Button variant="destructive" size="sm" iconName="Trash2" iconPosition="left" onClick={() => onDelete(photo)}>
+              Delete
             </Button>
           </div>
         </div>
